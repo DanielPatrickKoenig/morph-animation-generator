@@ -1,0 +1,17 @@
+.modal-content{
+    position: fixed;
+    display: flex;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    justify-content: center;
+    align-items: center;
+    background-color: $blockerColor;
+    > .modal-inner{
+        background-color: $bgModalColor;
+        width: 18rem;
+        padding: 1.5rem;
+    }
+
+}
