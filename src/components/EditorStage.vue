@@ -43,6 +43,11 @@ export default {
             default: 0,
         }
     },
+    watch: {
+        currentFrame(){
+            this.boardStage.setActiveFrame(this.currentFrame);
+        }
+    },
     data () {
         return {
             boardStage: {},
@@ -60,14 +65,20 @@ export default {
         this.boardStage = new ArtBoardTimeline({width: this.width, height: this.height, frameCount: 100});
         app.stage.addChild(this.boardStage);
         this.boardStage.onChange(this.boardChange);
+        this.boardUpdate();
     },
     methods: {
         boardChange(boards){
             this.shapes = boards.map(item => item.shape.vectorize());
             console.log(boards);
+            this.boardUpdate();
         },
         duplicate(e){
-            this.boardStage.duplicateFrame(e.sourceFrame, e.tagetFrame);
+            this.boardStage.duplicateFrame(Number(e.sourceFrame), Number(e.targetFrame));
+            this.boardUpdate();
+        },
+        boardUpdate(){
+            this.$emit('board-update', this.boardStage);
         }
     }
 }
