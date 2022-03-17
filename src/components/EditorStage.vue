@@ -6,6 +6,7 @@
                     v-for="(shape, i) in shapes"
                     :key="`shape-${i}`"
                     :d="shape"
+                    :class="{'current-path': currentPathIndex === i}"
                 />
             </svg>
             <canvas ref="canvas" />
@@ -53,6 +54,11 @@ export default {
             boardStage: {},
             shapes: [],
             duplicating: false,
+        }
+    },
+    computed: {
+        currentPathIndex(){
+            return this.boardStage.getArtBoardIndexByFrame(this.currentFrame);
         }
     },
     mounted () {

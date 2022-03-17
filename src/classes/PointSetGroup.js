@@ -5,7 +5,8 @@ export default class PointSetGroup extends PIXI.Container {
     constructor({ x, y, template }){
         super();
         this.points = [];
-        this.changeHandler = null
+        this.changeHandler = null;
+        this.selectedSet = null;
         this.canAdd = true;
         this.closed = false;
         this.isComplete = template;
@@ -35,6 +36,9 @@ export default class PointSetGroup extends PIXI.Container {
             });
             set.onSelected((pointSet) => {
                 console.log('onSelected called');
+                this.selectedSet = pointSet;
+                this.points.forEach(item => item.hideAnchors());
+                pointSet.showAnchors();
                 if(this.points.length > 1 && pointSet.setID === this.points[0].setID && !this.closed){
                     this.closed = true;
                     this.changeHandler(this.points);

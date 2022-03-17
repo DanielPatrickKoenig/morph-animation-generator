@@ -12,7 +12,12 @@
         }
         svg{
             path{
-                fill: rgba($pathColor, .2);
+                stroke: rgba($pathColor, .2);
+                stroke-width: 5px;
+                fill: transparent;
+                &.current-path{
+                    fill: rgba($pathColor, .2);
+                }
             }
         }
     }

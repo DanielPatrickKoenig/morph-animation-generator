@@ -1,15 +1,17 @@
 <template>
-    <div>
+    <div class="timeline">
         <ul>
             <li 
                 v-for="(frame, i) in frameList"
                 :key="`frame-${i}`"
+                :class="{ 'key-frame': activeFrames.includes(i), 'current-frame': currentFrame === i }"
+                :style="{ width: `${100/frameCount}vw` }"
             >
                 <a 
                     v-if="activeFrames.includes(i)"
                     @click="setActiveFrame(i)"
                 >
-                    ACTIVE
+                    {{i}}
                 </a>
             </li>
         </ul>
@@ -30,7 +32,8 @@ export default {
     },
     data () {
         return {
-            frameList: [...new Array(this.frameCount).keys()]
+            frameList: [...new Array(this.frameCount).keys()],
+            currentFrame: 0
         }
     },
     computed: {
@@ -40,6 +43,7 @@ export default {
     },
     methods: {
         setActiveFrame(index){
+            this.currentFrame = index;
             this.$emit('active-index', index)
         }
     }

@@ -117,5 +117,13 @@ export default class PointSet extends PIXI.Container{
     onSelected(handler){
         this.selectedHandler = handler;
     }
+    showAnchors(){
+        this.anchors.before.alpha = 1;
+        this.anchors.after.alpha = 1;
+    }
+    hideAnchors(){
+        this.anchors.before.alpha = 0;
+        this.anchors.after.alpha = 0;
+    }
     
 }
