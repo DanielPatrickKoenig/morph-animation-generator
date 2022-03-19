@@ -4,6 +4,8 @@ export default class ArtBoardGroup extends PIXI.Container{
     constructor({width, height, mode}){
         super();
         this.changeHandler = null;
+        this.pointAddedHandler = null;
+        this.pointRemovedHandler = null;
         this.artBoards = [];
         this.width = width;
         this.height = height;
@@ -14,6 +16,16 @@ export default class ArtBoardGroup extends PIXI.Container{
         this.activeArtBoard.onChange(() => {
             if(this.changeHandler){
                 this.changeHandler(this.artBoards);
+            }
+        });
+        this.activeArtBoard.onPointAdded((point) => {
+            if(this.pointAddedHandler){
+                this.pointAddedHandler(this.activeArtBoard, point);
+            }
+        });
+        this.activeArtBoard.onPointRemoved(() => {
+            if(this.pointRemovedHandler){
+                this.pointRemovedHandler();
             }
         });
     }
@@ -38,6 +50,12 @@ export default class ArtBoardGroup extends PIXI.Container{
     }
     onChange(handler){
         this.changeHandler = handler;
+    }
+    onPointAdded(handler){
+        this.pointAddedHandler = handler
+    }
+    onPointRemoved(handler){
+        this.pointRemovedHandler = handler
     }
     setActiveArtBoard(index){
         if(this.artBoards[index]){

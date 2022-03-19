@@ -4,7 +4,7 @@ import jt from 'jstrig';
 export default class PointSet extends PIXI.Container{
     constructor(){
         super();
-        this.setID = `${Math.random().toString().split('.').join('')}-${Math.random().toString().split('.').join('')}-${Math.random().toString().split('.').join('')}`;
+        this.setID = `set-${Math.random().toString().split('.').join('')}-${Math.random().toString().split('.').join('')}-${Math.random().toString().split('.').join('')}`;
         this.firstMove = true;
         this.mirrorDistance = true;
         this.mirrorAngle = true;

@@ -71,6 +71,8 @@ export default {
         this.boardStage = new ArtBoardTimeline({width: this.width, height: this.height, frameCount: 100});
         app.stage.addChild(this.boardStage);
         this.boardStage.onChange(this.boardChange);
+        this.boardStage.onPointAdded(this.pointAdded);
+        this.boardStage.onPointRemoved(this.pointRemoved);
         this.boardUpdate();
     },
     methods: {
@@ -78,6 +80,16 @@ export default {
             this.shapes = boards.map(item => item.shape.vectorize());
             console.log(boards);
             this.boardUpdate();
+        },
+        pointAdded(board, point){
+            console.log('point added');
+            console.log(board);
+            console.log(point);
+            this.$emit('point-added', { board, point });
+        },
+        pointRemoved(board, point){
+            console.log('point removed');
+            this.$emit('point-removed', { board, point });
         },
         duplicate(e){
             this.boardStage.duplicateFrame(Number(e.sourceFrame), Number(e.targetFrame));

@@ -24,6 +24,8 @@ export default class ArtBoardLayer extends InteractiveContainer{
         this.layerType = LayerTypes.UNSET;
         this.editor = null;
         this.changeHandler = null;
+        this.pointAddedHandler = null;
+        this.pointRemovedHandler = null;
         this.shapeContainer = new Draggable();
         this.shapeContainer.onStart(() => {
             this.editor.visible = false;
@@ -57,6 +59,9 @@ export default class ArtBoardLayer extends InteractiveContainer{
                     if(!this.editor){
                         // this.editor = new PointSetGroup({x: event.x, y: event.y});
                         this.editor = this.penDown(event.x, event.y, 200, 200);
+                        if(this.pointAddedHandler){
+                            this.pointAddedHandler(this.editor.points[0]);
+                        }
                         this.shape = new VectorableGraphics();
                         this.shapeContainer.addChild(this.shape);
                         this.editor.onChange((points) => {
@@ -89,7 +94,10 @@ export default class ArtBoardLayer extends InteractiveContainer{
                         this.addChild(this.editor);
                     }
                     else if(!this.editor.closed){
-                        this.editor.addPoint(event.x, event.y);
+                        const pointAdded = this.editor.addPoint(event.x, event.y);
+                        if(this.pointAddedHandler){
+                            this.pointAddedHandler(pointAdded);
+                        }
                     }
                     if(this.mode !== ArtBoardModes.PEN){
                         this.editor.changeHandler(this.editor.points);
@@ -118,6 +126,13 @@ export default class ArtBoardLayer extends InteractiveContainer{
     setMode(mode){
         this.mode = mode;
     }
+    removePoint({ setID }){
+        this.editor.removePoint({ setID });
+        if(this.pointRemovedHandler){
+            this.pointRemovedHandler();
+        }
+
+    }
     shiftPoints(x, y){
         this.editor.points.forEach(item => {
             item.x += x;
@@ -144,6 +159,12 @@ export default class ArtBoardLayer extends InteractiveContainer{
     }
     onChange(handler){
         this.changeHandler = handler;
+    }
+    onPointAdded(handler){
+        this.pointAddedHandler = handler
+    }
+    onPointRemoved(handler){
+        this.pointRemovedHandler = handler
     }
 }
 export {ArtBoardModes, LayerTypes};

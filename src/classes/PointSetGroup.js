@@ -47,6 +47,11 @@ export default class PointSetGroup extends PIXI.Container {
         }
         return set;
     }
+    removePoint({ setID }){
+        const targetSet = this.points.map((item, index) => ({set: item, index})).find(item => item.set.setID === setID);
+        this.removeChild(targetSet.set);
+        this.points.splice(targetSet.index, 1);
+    }
     onChange(handler){
         this.changeHandler = handler;
     }

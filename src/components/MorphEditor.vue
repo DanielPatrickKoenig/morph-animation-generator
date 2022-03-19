@@ -5,6 +5,7 @@
             :height="800"
             :current-frame="timelineData.currentFrame"
             @board-update="onBoardUpdate"
+            @point-added="onPointAdded"
         />
         <TimelineInterface 
             v-if="timelineData.frameCount"
@@ -12,11 +13,23 @@
             :frameCount="timelineData.frameCount"
             @active-index="onActiveIndex"
         />
-        <PropertyEditor 
+        <div 
+            v-if="timelineData.frames" 
+            class="editors"
+        >
+            <template v-for="(values, i, k) in pointMatrix[currentArtboard.artBoardID]">
+                <PropertyEditor 
+                    :key="`point-${k}`"
+                    :properties="values"
+                    @value-change="onValueChange"
+                />
+            </template>
+        </div>
+        <!-- <PropertyEditor 
             v-if="timelineData.frameCount"
             :properties="currentPointData"
             @value-change="onValueChange"
-        />
+        /> -->
     </div>
 </template>
 
@@ -40,21 +53,34 @@ export default {
             currentPointData: [
                 {type: 'checkbox', value: false, name: 'Mirror Distance'},
                 {type: 'checkbox', value: false, name: 'Mirror Ange'},
-                {type: 'number', value: false, name: 'X'},
-                {type: 'number', value: false, name: 'Y'}
-            ]
+                {type: 'checkbox', value: false, name: 'Show Before Anchor'},
+                {type: 'checkbox', value: false, name: 'Show After Anchor'},
+                // {type: 'number', value: false, name: 'X'},
+                // {type: 'number', value: false, name: 'Y'}
+            ],
+            pointMatrix: {}
+        }
+    },
+    computed:{
+        currentArtboard(){
+            return this.timelineData.frames.find(item => item.frame === this.timelineData.currentFrame).board;
         }
     },
     methods:{
+        
         onBoardUpdate(e){
             this.timelineData.frames = e.frames;
             this.timelineData.frameCount = e.frameCount;
-            const currentBoard = e.frames.find(item => item.frame === this.timelineData.currentFrame).board;
+            const currentBoard = this.currentArtboard;
+            // const currentBoard = e.frames.find(item => item.frame === this.timelineData.currentFrame).board;
             if(currentBoard.editor && currentBoard.editor.selectedSet){
+                this.updatePoint(currentBoard, currentBoard.editor.selectedSet);
                 this.currentPointData[0].value = currentBoard.editor.selectedSet.mirrorDistance;
                 this.currentPointData[1].value = currentBoard.editor.selectedSet.mirrorAngle;
-                this.currentPointData[2].value = currentBoard.editor.selectedSet.x;
-                this.currentPointData[3].value = currentBoard.editor.selectedSet.y;
+                this.currentPointData[2].value = currentBoard.editor.selectedSet.anchors.before.visible;
+                this.currentPointData[3].value = currentBoard.editor.selectedSet.anchors.after.visible;
+                // this.currentPointData[4].value = currentBoard.editor.selectedSet.x;
+                // this.currentPointData[5].value = currentBoard.editor.selectedSet.y;
             }
             
         },
@@ -67,9 +93,29 @@ export default {
             this.currentPointData[e.index].value = e.value;
             currentBoard.editor.selectedSet.mirrorDistance = this.currentPointData[0].value;
             currentBoard.editor.selectedSet.mirrorAngle = this.currentPointData[1].value;
-            currentBoard.editor.selectedSet.x = Number(this.currentPointData[2].value);
-            currentBoard.editor.selectedSet.y = Number(this.currentPointData[3].value);
+            currentBoard.editor.selectedSet.anchors.before.visible = this.currentPointData[2].value;
+            currentBoard.editor.selectedSet.anchors.after.visible = this.currentPointData[3].value;
+            // currentBoard.editor.selectedSet.x = Number(this.currentPointData[4].value);
+            // currentBoard.editor.selectedSet.y = Number(this.currentPointData[5].value);
 
+        },
+        onPointAdded(e){
+            const {board, point} = e;
+            this.updatePoint(board, point);
+        },
+        updatePoint(board, point){
+            console.log(board.artBoardID);
+            console.log(point.setID);
+            if(!this.pointMatrix[board.artBoardID]){
+                this.pointMatrix[board.artBoardID] = {};
+            }
+            this.pointMatrix[board.artBoardID][point.setID] = [
+                {type: 'checkbox', value: point.mirrorDistance, name: 'Mirror Distance'},
+                {type: 'checkbox', value: point.mirrorAngle, name: 'Mirror Ange'},
+                {type: 'checkbox', value: point.anchors.before.visible, name: 'Show Before Anchor'},
+                {type: 'checkbox', value: point.anchors.after.visible, name: 'Show After Anchor'},
+            ];
+            this.$forceUpdate();
         }
     }
 
