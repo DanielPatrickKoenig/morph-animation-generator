@@ -87,9 +87,9 @@ export default {
             console.log(point);
             this.$emit('point-added', { board, point });
         },
-        pointRemoved(board, point){
+        pointRemoved(){
             console.log('point removed');
-            this.$emit('point-removed', { board, point });
+            this.boardUpdate();
         },
         duplicate(e){
             this.boardStage.duplicateFrame(Number(e.sourceFrame), Number(e.targetFrame));
