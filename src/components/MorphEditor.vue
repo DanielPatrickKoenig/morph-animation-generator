@@ -25,7 +25,7 @@
                     <h2>{{frame.board.artBoardID}}</h2>
                     <template v-for="(values, k, i) in pointMatrix[frame.board.artBoardID]">
                         <PropertyEditor 
-                            v-show="k === currentPoint.setID"
+                            v-show="currentPoint && k === currentPoint.setID"
                             :key="`point-${fIndex}-${i}`"
                             :properties="values"
                             @value-change="onValueChange"
