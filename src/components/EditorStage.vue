@@ -13,11 +13,17 @@
         </div>
         <ul>
             <li><button @click="duplicating = true">Duplicate Current Frame</button></li>
+            <li><button @click="addingTemplate = true">Add Templae</button></li>
         </ul>
         <DuplicateFrameModal 
             v-if="duplicating"
             @close="duplicating = false"
             @confirm="duplicate"
+        />
+        <TemplateFrameModal 
+            v-if="addingTemplate"
+            @close="addingTemplate = false"
+            @confirm="insertTemplate"
         />
     </div>
 </template>
@@ -26,9 +32,11 @@
 import * as PIXI from 'pixi.js';
 import ArtBoardTimeline from '../classes/ArtBoardTimeline';
 import DuplicateFrameModal from './DuplicateFrameModal.vue';
+import TemplateFrameModal from './TemplateFrameModal.vue';
 export default {
     components: {
-        DuplicateFrameModal
+        DuplicateFrameModal,
+        TemplateFrameModal
     },
     props: {
         width: {
@@ -54,6 +62,7 @@ export default {
             boardStage: {},
             shapes: [],
             duplicating: false,
+            addingTemplate: false
         }
     },
     computed: {
@@ -94,6 +103,9 @@ export default {
         duplicate(e){
             this.boardStage.duplicateFrame(Number(e.sourceFrame), Number(e.targetFrame));
             this.boardUpdate();
+        },
+        insertTemplate(e){
+            this.boardStage.insertTemplateFrame(e.template);
         },
         boardUpdate(){
             this.$emit('board-update', this.boardStage);

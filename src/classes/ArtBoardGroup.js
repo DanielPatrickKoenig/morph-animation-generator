@@ -37,6 +37,17 @@ export default class ArtBoardGroup extends PIXI.Container{
         board.addContent({x: 0, y: 0});
         return board;
     }
+    artBoardFromTemplate(template){
+        const board = this.activeArtBoard;
+        board.setMode(ArtBoardModes.TEMPLATE);
+        board.setTemplate(template);
+        // const lastPoint = board.editor.points[board.editor.points.length - 1];
+        board.addContent({x: 0, y: 0});
+        console.log(board);
+        const lastPoint = board.editor.points[board.editor.points.length - 1];
+        lastPoint.selectedHandler(lastPoint);
+        return board;
+    }
     addArtBoard(){
         const board = new ArtBoardLayer({width: this.width, height: this.height});
         this.addChild(board);

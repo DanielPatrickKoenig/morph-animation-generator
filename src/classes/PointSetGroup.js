@@ -4,6 +4,7 @@ import ShapeTemplate from './ShapeTemplate';
 export default class PointSetGroup extends PIXI.Container {
     constructor({ x, y, template }){
         super();
+        // console.log('CREATED FROM TEMPLATE');
         this.points = [];
         this.changeHandler = null;
         this.selectedSet = null;

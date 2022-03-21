@@ -34,6 +34,9 @@ export default class ArtBoardTimeline extends ArtBoardGroup{
         this.frames.push({frame: targetFrame, board: duplicate});
         this.hideInactiveFrames();
     }
+    insertTemplateFrame(template){
+        this.artBoardFromTemplate(template);
+    }
     setActiveFrame(frameIndex){
         this.activeFrame = frameIndex;
         const boardIndex = this.getArtBoardIndexByFrame(frameIndex);
