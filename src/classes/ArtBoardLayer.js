@@ -8,7 +8,8 @@ const ArtBoardModes = {
     MOVE: 0,
     PEN: 1,
     POLYGON: 2,
-    TEMPLATE: 3
+    TEMPLATE: 3,
+    RESIZE: 4
 };
 const LayerTypes = {
     UNSET: 0,
@@ -47,7 +48,8 @@ export default class ArtBoardLayer extends InteractiveContainer{
         this.surfaceContainer.addChild(surface);
         const downMethod = (e) => {
             const event = this.processEvent(e);
-            console.log(this);
+            console.log("down method called");
+            console.log(this.mode);
             switch(this.mode){
                 case ArtBoardModes.MOVE:{
                     break;

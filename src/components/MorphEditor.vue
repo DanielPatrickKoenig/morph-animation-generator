@@ -1,5 +1,19 @@
 <template>
     <div>
+        <ul v-if="timelineData.frames" class="tools">
+            <li v-for="(tool, i) in appTools" :key="`tool-${i}`">
+                <label>
+                    <span>{{tool.label}}</span>
+                    <input
+                        type="radio"
+                        name="tool"
+                        :value="tool.mode"
+                        v-model="currentTool"
+                        @change="onToolSelected"
+                    />
+                </label>
+            </li>
+        </ul>
         <EditorStage 
             :width="1000" 
             :height="800"
@@ -21,6 +35,7 @@
                 <div 
                     v-show="frame.board.artBoardID === currentArtboard.artBoardID"
                     :key="`frame-${fIndex}`"
+                    style="margin-bottom: 200px;"
                 >
                     <h2>{{frame.board.artBoardID}}</h2>
                     <template v-for="(values, k, i) in pointMatrix[frame.board.artBoardID]">
@@ -46,6 +61,7 @@
 import EditorStage from './EditorStage.vue';
 import TimelineInterface from './TimelineInterface.vue';
 import PropertyEditor from './ProperyEditor.vue';
+import {ArtBoardModes} from '../classes/ArtBoardLayer';
 export default {
     components: {
         EditorStage,
@@ -65,10 +81,15 @@ export default {
                 {type: 'checkbox', value: false, name: 'Mirror Ange'},
                 {type: 'checkbox', value: false, name: 'Show Before Anchor'},
                 {type: 'checkbox', value: false, name: 'Show After Anchor'},
-                // {type: 'number', value: false, name: 'X'},
-                // {type: 'number', value: false, name: 'Y'}
+                {type: 'number', value: 0, name: 'x'},
+                {type: 'number', value: 0, name: 'y'}
             ],
-            pointMatrix: {}
+            pointMatrix: {},
+            appTools: [
+                { mode: ArtBoardModes.PEN, label: 'Pen' },
+                { mode: ArtBoardModes.RESIZE, label: 'Resize' }
+            ],
+            currentTool: ArtBoardModes.PEN
         }
     },
     computed:{
@@ -92,6 +113,8 @@ export default {
                 this.currentPointData[2].value = currentBoard.editor.selectedSet.mirrorAngle;
                 this.currentPointData[3].value = currentBoard.editor.selectedSet.anchors.before.visible;
                 this.currentPointData[4].value = currentBoard.editor.selectedSet.anchors.after.visible;
+                this.currentPointData[5].value = Number(currentBoard.editor.selectedSet.x);
+                this.currentPointData[6].value = Number(currentBoard.editor.selectedSet.y);
                 // this.currentPointData[4].value = currentBoard.editor.selectedSet.x;
                 // this.currentPointData[5].value = currentBoard.editor.selectedSet.y;
             }
@@ -108,8 +131,9 @@ export default {
             currentBoard.editor.selectedSet.mirrorAngle = this.currentPointData[2].value;
             currentBoard.editor.selectedSet.anchors.before.visible = this.currentPointData[3].value;
             currentBoard.editor.selectedSet.anchors.after.visible = this.currentPointData[4].value;
-            // currentBoard.editor.selectedSet.x = Number(this.currentPointData[4].value);
-            // currentBoard.editor.selectedSet.y = Number(this.currentPointData[5].value);
+            currentBoard.editor.selectedSet.x = Number(this.currentPointData[5].value);
+            currentBoard.editor.selectedSet.y = Number(this.currentPointData[6].value);
+            currentBoard.editor.changeHandler(currentBoard.editor.points);
 
         },
         onPointAdded(e){
@@ -128,8 +152,14 @@ export default {
                 {type: 'checkbox', value: point.mirrorAngle, name: 'Mirror Ange'},
                 {type: 'checkbox', value: point.anchors.before.visible, name: 'Show Before Anchor'},
                 {type: 'checkbox', value: point.anchors.after.visible, name: 'Show After Anchor'},
+                {type: 'number', value: point.x, name: 'x'},
+                {type: 'number', value: point.y, name: 'y'},
             ];
             this.$forceUpdate();
+        },
+        onToolSelected(){
+            console.log(this.currentArtboard);
+            this.currentArtboard.setMode(this.currentTool);
         }
     }
 
