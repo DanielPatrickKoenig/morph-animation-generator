@@ -62,7 +62,6 @@ export default {
     },
     methods: {
         onChange(index){
-            // console.log(index);
             this.$emit('value-change', {index, value: this.propertyList[index]});
         }
     }

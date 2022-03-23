@@ -82,7 +82,11 @@ export default {
                 {type: 'checkbox', value: false, name: 'Show Before Anchor'},
                 {type: 'checkbox', value: false, name: 'Show After Anchor'},
                 {type: 'number', value: 0, name: 'x'},
-                {type: 'number', value: 0, name: 'y'}
+                {type: 'number', value: 0, name: 'y'},
+                {type: 'number', value: 0, name: 'before x'},
+                {type: 'number', value: 0, name: 'before y'},
+                {type: 'number', value: 0, name: 'after x'},
+                {type: 'number', value: 0, name: 'after y'}
             ],
             pointMatrix: {},
             appTools: [
@@ -115,8 +119,17 @@ export default {
                 this.currentPointData[4].value = currentBoard.editor.selectedSet.anchors.after.visible;
                 this.currentPointData[5].value = Number(currentBoard.editor.selectedSet.x);
                 this.currentPointData[6].value = Number(currentBoard.editor.selectedSet.y);
+
+                this.currentPointData[7].value = Number(currentBoard.editor.selectedSet.anchors.before.x);
+                this.currentPointData[8].value = Number(currentBoard.editor.selectedSet.anchors.before.y);
+                this.currentPointData[9].value = Number(currentBoard.editor.selectedSet.anchors.after.x);
+                this.currentPointData[10].value = Number(currentBoard.editor.selectedSet.anchors.after.y);
                 // this.currentPointData[4].value = currentBoard.editor.selectedSet.x;
                 // this.currentPointData[5].value = currentBoard.editor.selectedSet.y;
+            }
+            if(this.currentArtboard){
+                console.log(this.currentArtboard.shape);
+
             }
             
         },
@@ -124,7 +137,6 @@ export default {
             this.timelineData.currentFrame = e;
         },
         onValueChange(e){
-            // console.log(e);
             const currentBoard = this.timelineData.frames.find(item => item.frame === this.timelineData.currentFrame).board;
             this.currentPointData[e.index].value = e.value;
             currentBoard.editor.selectedSet.mirrorDistance = this.currentPointData[1].value;
@@ -133,6 +145,11 @@ export default {
             currentBoard.editor.selectedSet.anchors.after.visible = this.currentPointData[4].value;
             currentBoard.editor.selectedSet.x = Number(this.currentPointData[5].value);
             currentBoard.editor.selectedSet.y = Number(this.currentPointData[6].value);
+
+            currentBoard.editor.selectedSet.anchors.before.x = Number(this.currentPointData[7].value);
+            currentBoard.editor.selectedSet.anchors.before.y = Number(this.currentPointData[8].value);
+            currentBoard.editor.selectedSet.anchors.after.x = Number(this.currentPointData[9].value);
+            currentBoard.editor.selectedSet.anchors.after.y = Number(this.currentPointData[10].value);
             currentBoard.editor.changeHandler(currentBoard.editor.points);
 
         },
@@ -141,8 +158,6 @@ export default {
             this.updatePoint(board, point);
         },
         updatePoint(board, point){
-            console.log(board.artBoardID);
-            console.log(point.setID);
             if(!this.pointMatrix[board.artBoardID]){
                 this.pointMatrix[board.artBoardID] = {};
             }
@@ -154,11 +169,14 @@ export default {
                 {type: 'checkbox', value: point.anchors.after.visible, name: 'Show After Anchor'},
                 {type: 'number', value: point.x, name: 'x'},
                 {type: 'number', value: point.y, name: 'y'},
+                {type: 'number', value: point.anchors.before.x, name: 'before x'},
+                {type: 'number', value: point.anchors.before.y, name: 'before y'},
+                {type: 'number', value: point.anchors.after.x, name: 'after x'},
+                {type: 'number', value: point.anchors.after.y, name: 'after y'}
             ];
             this.$forceUpdate();
         },
         onToolSelected(){
-            console.log(this.currentArtboard);
             this.currentArtboard.setMode(this.currentTool);
         }
     }

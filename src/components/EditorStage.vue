@@ -87,17 +87,12 @@ export default {
     methods: {
         boardChange(boards){
             this.shapes = boards.map(item => item.shape.vectorize());
-            console.log(boards);
             this.boardUpdate();
         },
         pointAdded(board, point){
-            console.log('point added');
-            console.log(board);
-            console.log(point);
             this.$emit('point-added', { board, point });
         },
         pointRemoved(){
-            console.log('point removed');
             this.boardUpdate();
         },
         duplicate(e){

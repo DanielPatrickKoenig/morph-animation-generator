@@ -54,9 +54,7 @@ export default class PointSet extends PIXI.Container{
             this.anchors[item].addChild(anchorGraphic);
             this.addChild(this.anchors[item]);
             this.anchors[item].onStart(() => {
-                // console.log(this.anchors);
                 this.twinProperties.twin = index === 0 ? this.anchors[Object.keys(this.anchors)[1]] : this.anchors[Object.keys(this.anchors)[0]];
-                console.log(this.twinProperties.twin.x);
                 if(this.mirrorAngle){
                     this.twinProperties.angle = jt.angle({x: 0, y: 0}, this.twinProperties.twin);
                     this.twinProperties.distance = jt.distance({x: 0, y: 0}, this.twinProperties.twin);
@@ -71,7 +69,6 @@ export default class PointSet extends PIXI.Container{
                         : this.twinProperties.distance;
                     this.twinProperties.twin.x = jt.orbit(0, distance, angle + 180, 'cos');
                     this.twinProperties.twin.y = jt.orbit(0, distance, angle + 180, 'sin');
-                    // console.log(this.twinProperties);
                 }
                 if(this.changeHandler){
                     this.changeHandler(this.getAnchorPositions());
@@ -85,7 +82,6 @@ export default class PointSet extends PIXI.Container{
                 this.anchors.after.visible = afterMoved || this.forceAnchorVisibility.after;
                 this.anchors.before.hasMoved = beforeMoved;
                 this.anchors.after.hasMoved = afterMoved;
-                console.log(this.anchors.before.visible);
                 this.firstMove = false;
                 this.mirrorDistance = false;
                 if(this.changeHandler){

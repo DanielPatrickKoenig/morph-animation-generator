@@ -43,7 +43,6 @@ export default class ArtBoardGroup extends PIXI.Container{
         board.setTemplate(template);
         // const lastPoint = board.editor.points[board.editor.points.length - 1];
         board.addContent({x: 0, y: 0});
-        console.log(board);
         const lastPoint = board.editor.points[board.editor.points.length - 1];
         lastPoint.selectedHandler(lastPoint);
         return board;

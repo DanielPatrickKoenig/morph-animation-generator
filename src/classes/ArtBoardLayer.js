@@ -48,15 +48,12 @@ export default class ArtBoardLayer extends InteractiveContainer{
         this.surfaceContainer.addChild(surface);
         const downMethod = (e) => {
             const event = this.processEvent(e);
-            console.log("down method called");
-            console.log(this.mode);
             switch(this.mode){
                 case ArtBoardModes.MOVE:{
                     break;
                 }
                 case ArtBoardModes.PEN:
                 case ArtBoardModes.TEMPLATE:{
-                    console.log('pen');
                     this.layerType = LayerTypes.PEN;
                     if(!this.editor){
                         // this.editor = new PointSetGroup({x: event.x, y: event.y});
@@ -88,7 +85,6 @@ export default class ArtBoardLayer extends InteractiveContainer{
                                 this.shape.endFill();
                             }
                             if(this.changeHandler){
-                                console.log('art board change');
                                 this.changeHandler({ shape: this.shape, editor: this.editor });
                             }
                             

@@ -12,7 +12,6 @@ export default class Polygon extends VectorableGraphics{
             fillOpacity,
             radius
         };
-        // console.log(jt.distance({x: 100, y: 100}, {x: 200, y: 300}))
         this.curveEnd = this.getCurveEnd(0, 1);
         this.renderShape();
         
