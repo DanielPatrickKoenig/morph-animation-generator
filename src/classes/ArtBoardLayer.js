@@ -113,6 +113,7 @@ export default class ArtBoardLayer extends InteractiveContainer{
         this.addContent = downMethod;
         this.surfaceContainer.on('mousedown', downMethod);
         this.surfaceContainer.on('touchstart', downMethod);
+
         // this.on('mousemove', this.move);
         // this.on('touchmove', this.move);
         // this.on('mouseup', this.up);

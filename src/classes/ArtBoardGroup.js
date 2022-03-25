@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import ArtBoardLayer, {ArtBoardModes} from './ArtBoardLayer';
+import Resizer from './Resizer';
 export default class ArtBoardGroup extends PIXI.Container{
     constructor({width, height, mode}){
         super();
@@ -28,6 +29,15 @@ export default class ArtBoardGroup extends PIXI.Container{
                 this.pointRemovedHandler();
             }
         });
+        setTimeout(() => {
+            const resizer = new Resizer({x: 50, y: 50, width: 200, height: 100});
+            resizer.onChange((e) => {
+                console.log(e);
+            })
+            this.addChild(resizer);
+            console.log(resizer);
+        }, 1000);
+        
     }
     duplicateArtBoard(artBoard){
         const template = artBoard.editor.convertToTemplate();
