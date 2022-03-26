@@ -22,8 +22,28 @@ export default class VectorableGraphics extends PIXI.Graphics {
         super.lineTo(x, y);
 
     }
+    verticalLineTo(x, y){
+        this.addDirective('V', [x]);
+        super.lineTo(x, y);
+
+    }
+    horizontalLineTo(x, y){
+        this.addDirective('H', [y]);
+        super.lineTo(x, y);
+
+    }
+    smoothLineTo(x, y){
+        this.addDirective('T', [x, y]);
+        super.lineTo(x, y);
+
+    }
     quadraticCurveTo(cx, cy, dx, dy){
         this.addDirective('Q', [cx, cy, dx, dy]);
+        super.quadraticCurveTo(cx, cy, dx, dy);
+
+    }
+    smoothQuadraticCurveTo(cx, cy, dx, dy){
+        this.addDirective('S', [cx, cy, dx, dy]);
         super.quadraticCurveTo(cx, cy, dx, dy);
 
     }

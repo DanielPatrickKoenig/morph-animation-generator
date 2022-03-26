@@ -3,6 +3,8 @@ import InteractiveContainer from './InteractiveContainer';
 import PointSetGroup from './PointSetGroup';
 import VectorableGraphics from './VectorableGraphics';
 import Draggable from './Draggable';
+import Resizer from './Resizer';
+import {PointTypes} from './PointSet';
 // import PointSet from './PointSet';
 const ArtBoardModes = {
     MOVE: 0,
@@ -47,13 +49,24 @@ export default class ArtBoardLayer extends InteractiveContainer{
         this.addChild(this.surfaceContainer);
         this.surfaceContainer.addChild(surface);
         const downMethod = (e) => {
+            console.log('DOWN METHOD !!!!')
             const event = this.processEvent(e);
             switch(this.mode){
                 case ArtBoardModes.MOVE:{
                     break;
                 }
+                case ArtBoardModes.RESIZE:{
+                    if(this.editor){
+                        this.editor.visible = false;
+                    }
+                    break;
+                }
                 case ArtBoardModes.PEN:
                 case ArtBoardModes.TEMPLATE:{
+                    if(this.editor){
+                        this.editor.visible = true;
+                    }
+                    
                     this.layerType = LayerTypes.PEN;
                     if(!this.editor){
                         // this.editor = new PointSetGroup({x: event.x, y: event.y});
@@ -68,6 +81,7 @@ export default class ArtBoardLayer extends InteractiveContainer{
                                 this.shape.clear();
                                 this.shape.beginFill(0xffffff, .001);
                                 this.shape.lineStyle(1, 0x000000, 1);
+                                console.log(points.map(item => item.pointType));
                                 points.forEach((item, index) => {
                                     const coords = item.getAnchorPositions();
                                     if(index === 0){
@@ -77,8 +91,39 @@ export default class ArtBoardLayer extends InteractiveContainer{
                                     const nextIndex = shouldCloseShape ? 0 : index + 1;
                                     const nextCoords = points[nextIndex] ? points[nextIndex].getAnchorPositions() : null;
                                     if(nextCoords){
-                                        this.shape.bezierCurveTo(coords.anchors.after.x, coords.anchors.after.y, nextCoords.anchors.before.x, nextCoords.anchors.before.y, nextCoords.x, nextCoords.y)
+                                        switch(item.pointType){
+                                            case PointTypes.C:{
+                                                this.shape.bezierCurveTo(coords.anchors.after.x, coords.anchors.after.y, nextCoords.anchors.before.x, nextCoords.anchors.before.y, nextCoords.x, nextCoords.y);
+                                                break;
+                                            }
+                                            case PointTypes.Q:{
+                                                this.shape.quadraticCurveTo(coords.anchors.after.x, coords.anchors.after.y, nextCoords.x, nextCoords.y);
+                                                break;
+                                            }
+                                            case PointTypes.S:{
+                                                this.shape.smoothQuadraticCurveTo(coords.anchors.after.x, coords.anchors.after.y, nextCoords.x, nextCoords.y);
+                                                break;
+                                            }
+                                            case PointTypes.L:{
+                                                this.shape.lineTo(nextCoords.x, nextCoords.y);
+                                                break;
+                                            }
+                                            case PointTypes.T:{
+                                                this.shape.smoothLineTo(nextCoords.x, nextCoords.y)
+                                                break;
+                                            }
+                                            case PointTypes.V:{
+                                                this.shape.verticalLineTo(nextCoords.x, nextCoords.y)
+                                                break;
+                                            }
+                                            case PointTypes.H:{
+                                                this.shape.horizontalLineTo(nextCoords.x, nextCoords.y)
+                                                break;
+                                            }
+                                        }
                                     }
+                                    
+                                    
                                     this.surfaceContainer.interactive = !this.editor.closed;
                                     
                                 });
@@ -120,10 +165,59 @@ export default class ArtBoardLayer extends InteractiveContainer{
         // this.on('mouseupoutside', this.up);
         // this.on('touchend', this.up);
         // this.on('touchendoutside', this.up);
+        this.resizeContainer = new PIXI.Container();
+        this.addChild(this.resizeContainer);
     }
     
     setMode(mode){
         this.mode = mode;
+        switch(this.mode){
+            case ArtBoardModes.RESIZE:{
+                console.log(this.shape);
+                if(this.editor && this.shape){
+                    this.editor.alpha = 0;
+                    const shapeBounds = this.shape.getBounds();
+                    const resizer = new Resizer({x: shapeBounds.x, y: shapeBounds.y, width: shapeBounds.width, height: shapeBounds.height});
+                    const basePositions = this.editor.points.map(item => {
+                        return {
+                            x: item.x - shapeBounds.x,
+                            y: item.y - shapeBounds.y,
+                            anchors:{
+                                before: {x: item.anchors.before.x, y: item.anchors.before.y},
+                                after: {x: item.anchors.after.x, y: item.anchors.after.y}
+                            }
+                        }
+                    })
+                    resizer.onChange((e) => {
+                        console.log(e);
+                        console.log(basePositions);
+                        const ratios = {
+                            width: e.current.width / e.base.width,
+                            height: e.current.height / e.base.height
+                        };
+                        this.editor.points.forEach((item, index) => {
+                            item.x = e.current.x + (basePositions[index].x * ratios.width);
+                            item.y = e.current.y + (basePositions[index].y * ratios.height);
+                            item.anchors.before.x = basePositions[index].anchors.before.x * ratios.width;
+                            item.anchors.before.y = basePositions[index].anchors.before.y * ratios.height;
+                            item.anchors.after.x = basePositions[index].anchors.after.x * ratios.width;
+                            item.anchors.after.y = basePositions[index].anchors.after.y * ratios.height;
+                        });
+                        this.editor.changeHandler(this.editor.points);
+                    });
+                    this.resizeContainer.addChild(resizer);
+                    // console.log(resizer);
+                }
+                break;
+            }
+            case ArtBoardModes.PEN:
+            case ArtBoardModes.TEMPLATE:{
+                if(this.editor){
+                    this.editor.alpha = 1;
+                    this.resizeContainer.removeChildren();
+                }
+            }
+        }        
     }
     removePoint({ setID }){
         this.editor.removePoint({ setID });

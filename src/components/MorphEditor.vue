@@ -1,5 +1,6 @@
 <template>
     <div>
+        
         <ul v-if="timelineData.frames" class="tools">
             <li v-for="(tool, i) in appTools" :key="`tool-${i}`">
                 <label>
@@ -27,6 +28,13 @@
             :frameCount="timelineData.frameCount"
             @active-index="onActiveIndex"
         />
+        <!-- <div>
+            <a 
+                v-for="(type, k, i) in PointTypes"
+                :key="`type-${i}`"
+                @click="setCurrentPointType(type)"
+            >{{k}}</a>
+        </div> -->
         <div 
             v-if="timelineData.frames" 
             class="editors"
@@ -62,6 +70,7 @@ import EditorStage from './EditorStage.vue';
 import TimelineInterface from './TimelineInterface.vue';
 import PropertyEditor from './ProperyEditor.vue';
 import {ArtBoardModes} from '../classes/ArtBoardLayer';
+import {PointTypes} from '../classes/PointSet';
 export default {
     components: {
         EditorStage,
@@ -93,7 +102,8 @@ export default {
                 { mode: ArtBoardModes.PEN, label: 'Pen' },
                 { mode: ArtBoardModes.RESIZE, label: 'Resize' }
             ],
-            currentTool: ArtBoardModes.PEN
+            currentTool: ArtBoardModes.PEN,
+            PointTypes
         }
     },
     computed:{
@@ -127,10 +137,10 @@ export default {
                 // this.currentPointData[4].value = currentBoard.editor.selectedSet.x;
                 // this.currentPointData[5].value = currentBoard.editor.selectedSet.y;
             }
-            if(this.currentArtboard){
-                console.log(this.currentArtboard.shape);
+            // if(this.currentArtboard){
+            //     console.log(this.currentArtboard.shape);
 
-            }
+            // }
             
         },
         onActiveIndex(e){
@@ -178,6 +188,9 @@ export default {
         },
         onToolSelected(){
             this.currentArtboard.setMode(this.currentTool);
+        },
+        setCurrentPointType(type){
+            this.currentArtboard.editor.setPointType(type);
         }
     }
 

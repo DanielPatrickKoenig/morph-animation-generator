@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import PointSet from './PointSet';
+import PointSet, {PointTypes} from './PointSet';
 import ShapeTemplate from './ShapeTemplate';
 export default class PointSetGroup extends PIXI.Container {
     constructor({ x, y, template }){
@@ -10,6 +10,7 @@ export default class PointSetGroup extends PIXI.Container {
         this.canAdd = true;
         this.closed = false;
         this.isComplete = template;
+        this.nextPointType = PointTypes.C;
         if(!this.isComplete){
             this.addPoint(x, y);
         }
@@ -21,7 +22,7 @@ export default class PointSetGroup extends PIXI.Container {
     addPoint(x, y){
         let set = null;
         if(this.canAdd){
-            set = new PointSet();
+            set = new PointSet(this.nextPointType);
             this.points.push(set);
             this.addChild(set);
             set.x = x;
@@ -30,6 +31,7 @@ export default class PointSetGroup extends PIXI.Container {
                 set.anchors.after.startDrag({x, y});
             }
             set.onChange(() => {
+                this.managePointPositions();
                 if(this.changeHandler){
                     this.changeHandler(this.points);
                 }
@@ -45,6 +47,25 @@ export default class PointSetGroup extends PIXI.Container {
             });
         }
         return set;
+    }
+    managePointPositions(){
+        this.points.forEach((item, index) => {
+            if(index > 0 && this.points[index + 1]){
+                switch(this.points[index + 1].pointType){
+                    case PointTypes.H:{
+                        this.points[index + 1].y = item.y;
+                        break;
+                    }
+                    case PointTypes.V:{
+                        this.points[index + 1].x = item.x;
+                        break;
+                    }
+                }
+            }
+        });
+    }
+    setPointType(type){
+        this.nextPointType = type;
     }
     removePoint({ setID }){
         const targetSet = this.points.map((item, index) => ({set: item, index})).find(item => item.set.setID === setID);

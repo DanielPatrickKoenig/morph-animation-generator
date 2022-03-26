@@ -1,8 +1,17 @@
 import * as PIXI from 'pixi.js';
 import Draggable from './Draggable';
 import jt from 'jstrig';
+const PointTypes = {
+    C: 'C',
+    S: 'S',
+    Q: 'Q',
+    L: 'L',
+    T: 'T',
+    H: 'H',
+    V: 'V'
+}
 export default class PointSet extends PIXI.Container{
-    constructor(){
+    constructor(pointType){
         super();
         this.setID = `set-${Math.random().toString().split('.').join('')}-${Math.random().toString().split('.').join('')}-${Math.random().toString().split('.').join('')}`;
         this.firstMove = true;
@@ -10,6 +19,7 @@ export default class PointSet extends PIXI.Container{
         this.mirrorAngle = true;
         this.changeHandler = null;
         this.selectedHandler = null;
+        this.pointType = pointType ? pointType : PointTypes.C;
         this.forceAnchorVisibility = {
             before: false,
             after: false
@@ -24,7 +34,7 @@ export default class PointSet extends PIXI.Container{
         this.anchors = {
             before: new Draggable(),
             after: new Draggable()
-        }
+        };
         this.point = new Draggable(this);
         const pointGraphic = new PIXI.Graphics();
         pointGraphic.beginFill(0xcccccc);
@@ -89,6 +99,8 @@ export default class PointSet extends PIXI.Container{
                 }
             });
         });
+
+        this.setPointType(this.pointType);
         
     }
     getAnchorPositions(){
@@ -121,5 +133,29 @@ export default class PointSet extends PIXI.Container{
         this.anchors.before.alpha = 0;
         this.anchors.after.alpha = 0;
     }
+    setPointType(type){
+        this.pointType = type;
+        switch(this.pointType){
+            case PointTypes.C:{
+                this.anchors.before.children[0].visible = true;
+                this.anchors.after.children[0].visible = true;
+                break;
+            }
+            case PointTypes.Q:
+            case PointTypes.S:{
+                this.anchors.before.children[0].visible = false;
+                break;
+            }
+            case PointTypes.H:
+            case PointTypes.V:
+            case PointTypes.L:
+            case PointTypes.T:{
+                this.anchors.before.children[0].visible = false;
+                this.anchors.after.children[0].visible = false;
+                break;
+            }
+        } 
+    }
     
 }
+export {PointTypes};
