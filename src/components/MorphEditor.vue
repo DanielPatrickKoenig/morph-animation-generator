@@ -39,22 +39,30 @@
             v-if="timelineData.frames" 
             class="editors"
         >
-            <template v-for="(frame, fIndex) in timelineData.frames">
-                <div 
-                    v-show="frame.board.artBoardID === currentArtboard.artBoardID"
-                    :key="`frame-${fIndex}`"
-                    style="margin-bottom: 200px;"
-                >
-                    <h2>{{frame.board.artBoardID}}</h2>
-                    <template v-for="(values, k, i) in pointMatrix[frame.board.artBoardID]">
-                        <PropertyEditor 
-                            v-show="currentPoint && k === currentPoint.setID"
-                            :key="`point-${fIndex}-${i}`"
-                            :properties="values"
-                            @value-change="onValueChange"
-                        />
-                    </template>
-                </div>
+            <template v-if="[ArtBoardModes.PEN, ArtBoardModes.TEMPLATE].includes(currentTool)">
+                <template v-for="(frame, fIndex) in timelineData.frames">
+                    <div 
+                        v-show="frame.board.artBoardID === currentArtboard.artBoardID"
+                        :key="`frame-${fIndex}`"
+                        style="margin-bottom: 200px;"
+                    >
+                        <h2>{{frame.board.artBoardID}}</h2>
+                        <template v-for="(values, k, i) in pointMatrix[frame.board.artBoardID]">
+                            <PropertyEditor 
+                                v-show="currentPoint && k === currentPoint.setID"
+                                :key="`point-${fIndex}-${i}`"
+                                :properties="values"
+                                @value-change="onValueChange"
+                            />
+                        </template>
+                    </div>
+                </template>
+            </template>
+            <template v-else-if="currentTool === ArtBoardModes.RESIZE && currentArtboard.activeResizer">
+                <PropertyEditor 
+                    :properties="resizerProps"
+                    @value-change="onResizerUpdate"
+                />
             </template>
         </div>
         <!-- <PropertyEditor 
@@ -97,12 +105,14 @@ export default {
                 {type: 'number', value: 0, name: 'after x'},
                 {type: 'number', value: 0, name: 'after y'}
             ],
+
             pointMatrix: {},
             appTools: [
                 { mode: ArtBoardModes.PEN, label: 'Pen' },
                 { mode: ArtBoardModes.RESIZE, label: 'Resize' }
             ],
             currentTool: ArtBoardModes.PEN,
+            ArtBoardModes,
             PointTypes
         }
     },
@@ -112,6 +122,11 @@ export default {
         },
         currentPoint(){
             return this.currentArtboard.editor.selectedSet;
+        },
+        resizerProps(){
+            return ['x', 'y', 'width', 'height'].map(item => {
+                return {type: 'number', value: this.currentArtboard.activeResizer[`_${item}`], name: `_${item}`};
+            });
         }
     },
     methods:{
@@ -191,6 +206,27 @@ export default {
         },
         setCurrentPointType(type){
             this.currentArtboard.editor.setPointType(type);
+        },
+        onResizerUpdate(e){
+            switch(e.index){
+                case 0:{
+                    this.currentArtboard.activeResizer.setX(Number(e.value));
+                    break;
+                }
+                case 1:{
+                    this.currentArtboard.activeResizer.setY(Number(e.value));
+                    break;
+                }
+                case 2:{
+                    this.currentArtboard.activeResizer.setWidth(Number(e.value));
+                    break;
+                }
+                case 3:{
+                    this.currentArtboard.activeResizer.setHeight(Number(e.value));
+                    break;
+                }
+            }
+            console.log(e);
         }
     }
 

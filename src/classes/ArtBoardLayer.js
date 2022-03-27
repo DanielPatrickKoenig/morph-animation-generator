@@ -26,6 +26,7 @@ export default class ArtBoardLayer extends InteractiveContainer{
         this.mode = mode ? mode : ArtBoardModes.PEN;
         this.layerType = LayerTypes.UNSET;
         this.editor = null;
+        this.activeResizer = null;
         this.changeHandler = null;
         this.pointAddedHandler = null;
         this.pointRemovedHandler = null;
@@ -178,6 +179,7 @@ export default class ArtBoardLayer extends InteractiveContainer{
                     this.editor.alpha = 0;
                     const shapeBounds = this.shape.getBounds();
                     const resizer = new Resizer({x: shapeBounds.x, y: shapeBounds.y, width: shapeBounds.width, height: shapeBounds.height});
+                    this.activeResizer = resizer;
                     const basePositions = this.editor.points.map(item => {
                         return {
                             x: item.x - shapeBounds.x,
@@ -212,6 +214,7 @@ export default class ArtBoardLayer extends InteractiveContainer{
             }
             case ArtBoardModes.PEN:
             case ArtBoardModes.TEMPLATE:{
+                this.activeResizer = null;
                 if(this.editor){
                     this.editor.alpha = 1;
                     this.resizeContainer.removeChildren();

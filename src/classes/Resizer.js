@@ -36,21 +36,24 @@ export default class Resizer extends PIXI.Container{
             this.currentHandle = name;
         });
         handle.onMove(() => {
-            console.log(this.currentHandle);
-            if(this.currentHandle.includes('r')){
-                this._width = Math.abs(this.handles.l.x - this.handles[this.currentHandle].x);
+            if(this.currentHandle){
+                console.log(this.currentHandle);
+                if(this.currentHandle.includes('r')){
+                    this._width = Math.abs(this.handles.l.x - this.handles[this.currentHandle].x);
+                }
+                if(this.currentHandle.includes('l')){
+                    this._x = this.handles[this.currentHandle].x;
+                    this._width = Math.abs(this.handles[this.currentHandle].x - this.handles.r.x);
+                }
+                if(this.currentHandle.includes('t')){
+                    this._y = this.handles[this.currentHandle].y;
+                    this._height = Math.abs(this.handles.b.y - this.handles[this.currentHandle].y);
+                }
+                if(this.currentHandle.includes('b')){
+                    this._height = Math.abs(this.handles[this.currentHandle].y - this.handles.t.y);
+                }
             }
-            if(this.currentHandle.includes('l')){
-                this._x = this.handles[this.currentHandle].x;
-                this._width = Math.abs(this.handles[this.currentHandle].x - this.handles.r.x);
-            }
-            if(this.currentHandle.includes('t')){
-                this._y = this.handles[this.currentHandle].y;
-                this._height = Math.abs(this.handles.b.y - this.handles[this.currentHandle].y);
-            }
-            if(this.currentHandle.includes('b')){
-                this._height = Math.abs(this.handles[this.currentHandle].y - this.handles.t.y);
-            }
+            
             this.placeHandle('tl', this._x, this._y);
             this.placeHandle('t', this._x + (this._width / 2), this._y);
             this.placeHandle('tr', this._x + this._width, this._y);
@@ -81,5 +84,50 @@ export default class Resizer extends PIXI.Container{
     onChange(handler){
         this.changeHandler = handler;
     }
+    triggerChange(){
+        Object.keys(this.handles).forEach(item => {
+            const handle = this.handles[item];
+            handle.moveHandler(handle.x, handle.y);
+        });
+    }
+    setX(value){
+        this.currentHandle = 'tl';
+        this.handles.tl.x = value;
+        this.handles.l.x = value;
+        this.handles.bl.x = value;
+        this.handles.t.x = value + (this._width / 2);
+        this.handles.b.x = value + (this._width / 2);
+        this.handles.tr.x = value + this._width;
+        this.handles.r.x = value + this._width;
+        this.handles.br.x = value + this._width;
+        this.triggerChange();
+    }
+    setY(value){
+        this.currentHandle = 'tl';
+        this.handles.tl.y = value;
+        this.handles.t.y = value;
+        this.handles.tr.y = value;
+        this.handles.r.y = value + (this._height / 2);
+        this.handles.l.y = value + (this._height / 2);
+        this.handles.br.y = value + this._height;
+        this.handles.b.y = value + this._height;
+        this.handles.br.y = value + this._height;
+        this.triggerChange();
+    }
+    setWidth(value){
+        this.currentHandle = 'br';
+        this.handles.br.x = this._x + value;
+        this.handles.r.x = this._x + value;
+        this.handles.tr.x = this._x + value;
+        this.triggerChange();
+    }
+    setHeight(value){
+        this.currentHandle = 'br';
+        this.handles.br.y = this._y + value;
+        this.handles.r.y = this._y + value;
+        this.handles.tr.y = this._y + value;
+        this.triggerChange();
+    }
+
     
 }
