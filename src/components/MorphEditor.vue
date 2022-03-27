@@ -22,6 +22,7 @@
             @board-update="onBoardUpdate"
             @point-added="onPointAdded"
         />
+        <button @click="exportKeyFrames">Export</button>
         <TimelineInterface 
             v-if="timelineData.frameCount"
             :frames="timelineData.frames" 
@@ -227,6 +228,11 @@ export default {
                 }
             }
             console.log(e);
+        },
+        exportKeyFrames(){
+            const keyframeValues = this.timelineData.frames.map(item => `${item.frame}%{d: path("${item.board.shape.vectorize()}");}`);
+            console.log(`@keyframes test-frames{${keyframeValues.join('')}}`);
+            return `@keyframes test-frames{${keyframeValues.join('')}}`;
         }
     }
 
