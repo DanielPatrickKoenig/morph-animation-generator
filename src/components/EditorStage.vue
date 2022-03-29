@@ -89,7 +89,7 @@ export default {
     },
     methods: {
         descendantTest(){
-            console.log(selector(this.boardStage, ['Draggable']));
+            console.log(selector(this.boardStage, ['[Draggable]', '[width<15]']));
         },
         boardChange(boards){
             this.shapes = boards.map(item => item.shape.vectorize());

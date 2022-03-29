@@ -7,11 +7,7 @@ const Operators = {
     LESS_THAN: '<',
     GREATER_THAN: '>',
     LESS_THAN_OR_EQUAL: '<=',
-    GREATER_THAN_OR_EQUAL: '>=',
-    IS: 'is',
-    INSTANCE: 'instanceof',
-    IS_NOT: 'is not',
-    NOT: 'not' 
+    GREATER_THAN_OR_EQUAL: '>='
 
 }
 function getInheritanceChain(targetObject){
@@ -42,22 +38,43 @@ function getDescendants(scope, _collection){
     }
     return collection;
 }
+function castValue(v){
+    const table = {
+        'false': false
+    };
+    
+    return table[v] !== undefined ? table[v] : (!isNaN(v) ? Number(v) : v);
+}
+function stringToEvaluator(evaluator){
+    const validOperators = Object.keys(Operators).map(item => Operators[item]).filter(item => evaluator.includes(item));
+    if(validOperators.length){
+        const selectedOperator = validOperators.sort((a, b) => a.length - b.length).reverse()[0];
+        const chunks = evaluator.split(selectedOperator);
+        return {property: chunks[0], operator: selectedOperator, value: castValue(chunks[1])};
+    }
+    else{
+        return evaluator;
+    }
+}
 function executeFilter(object, evaluator){
     console.log(evaluator);
     console.log(object);
     console.log(getInheritanceChain(object).includes(evaluator));
+    if(evaluator.split){
+        evaluator = stringToEvaluator(
+            evaluator
+            .trim()
+            .split('')
+            .filter((item, index, arr) => !(index === 0 && item === '[') && !(index === arr.length - 1 && item === ']'))
+            .join('')
+        );
+
+    }
+    console.log(evaluator);
     const property = evaluator.property;
     const operator = evaluator.operator;
     const value = evaluator.value;
     switch(operator){
-        case Operators.IS:
-        case Operators.INSTANCE:{
-            return getInheritanceChain(object).includes(value);
-        }
-        case Operators.IS_NOT:
-        case Operators.NOT:{
-            return !getInheritanceChain(object).includes(value);
-        }
         case Operators.EQUALS:
         case Operators.EQUALS2:
         case Operators.EQUALS3:{
