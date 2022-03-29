@@ -11,6 +11,7 @@
             </svg>
             <canvas ref="canvas" />
         </div>
+        <button @click="descendantTest">Descendant Test</button>
         <ul>
             <li><button @click="duplicating = true">Duplicate Current Frame</button></li>
             <li><button @click="addingTemplate = true">Add Templae</button></li>
@@ -33,6 +34,8 @@ import * as PIXI from 'pixi.js';
 import ArtBoardTimeline from '../classes/ArtBoardTimeline';
 import DuplicateFrameModal from './DuplicateFrameModal.vue';
 import TemplateFrameModal from './TemplateFrameModal.vue';
+// import Draggable from '../classes/Draggable';
+import {selector} from '../utils/displaySelector';
 export default {
     components: {
         DuplicateFrameModal,
@@ -85,6 +88,9 @@ export default {
         this.boardUpdate();
     },
     methods: {
+        descendantTest(){
+            console.log(selector(this.boardStage, ['Draggable']));
+        },
         boardChange(boards){
             this.shapes = boards.map(item => item.shape.vectorize());
             this.boardUpdate();
